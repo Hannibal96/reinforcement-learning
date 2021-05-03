@@ -18,15 +18,12 @@ def traverse(goal_state, prev):
         if next_act:
             curr_state = curr_state.apply_action(next_act)
             result.insert(0, (curr_state, inverter_dic[next_act]))
-        else:
-            result.insert(0, (curr_state, next_act))
+        #else:
+        #    result.insert(0, (curr_state, next_act))
     return result
 
 
 def print_plan(plan):
-
-    print("*"*20)
-
     print('plan length {}'.format(len(plan)-1))
     for current_state, action in plan:
         print(current_state.to_string())

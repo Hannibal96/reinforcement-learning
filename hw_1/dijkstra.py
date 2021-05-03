@@ -28,8 +28,8 @@ def dijkstra(puzzle):
     prev = {initial.to_string(): None}
 
     ##################################################
-    fringe = []
-    heapq.heappush(fringe, (0, initial))
+    #fringe = []
+    #heapq.heappush(fringe, (0, initial))
     inverter_dic = {'u': 'd', 'd': 'u', 'r': 'l', 'l':'r'}
     done = False
     while len(fringe) > 0:
@@ -41,8 +41,7 @@ def dijkstra(puzzle):
                 continue
             heapq.heappush(fringe, (current_dis+1, new_fringe_state))
             prev[new_fringe_state.to_string()] = inverter_dic[act]
-            if new_fringe_state.get_manhattan_distance(goal_state) == 0:
-                print("done d=", current_dis)
+            if new_fringe_state.to_string() == goal.to_string():
                 done = True
                 break
         if done:
@@ -55,6 +54,8 @@ def dijkstra(puzzle):
 def solve(puzzle):
     # compute mapping to previous using dijkstra
     prev_mapping = dijkstra(puzzle)
+    #print("Open states:", len(prev_mapping))
+
     # extract the state-action sequence
     plan = traverse(puzzle.goal_state, prev_mapping)
     print_plan(plan)
@@ -69,7 +70,6 @@ if __name__ == '__main__':
         'r', 'r', 'd', 'l', 'u', 'l', 'd', 'd', 'r', 'r', 'u', 'l', 'd', 'r', 'u', 'u', 'l', 'd', 'l', 'd', 'r', 'r',
         'u', 'l', 'u'
     ]
-
     goal_state = initial_state
     for a in actions:
         goal_state = goal_state.apply_action(a)

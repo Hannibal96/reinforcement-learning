@@ -79,6 +79,15 @@ class State:
             total_distance += diff
         return total_distance
 
+    def get_hamming_distance(self, other):
+        total_distance = 0
+        for i in range(1, 9):
+            self_location = self._get_location_char(str(i))
+            other_location = other._get_location_char(str(i))
+            if 0 < abs(self_location[0] - other_location[0]) + abs(self_location[1] - other_location[1]):
+                total_distance += 1
+        return total_distance
+
     def is_same(self, other):
         return self.get_manhattan_distance(other) == 0
 
@@ -99,4 +108,12 @@ if __name__ == '__main__':
     right_state = initial_state.apply_action('r')
     print('one to the right from initial')
     print(right_state.to_string())
+    right_state = right_state.apply_action('d')
+    right_state = right_state.apply_action('l')
+    right_state = right_state.apply_action('u')
+    print(right_state.to_string())
+    print(right_state.get_manhattan_distance(initial_state))
+    print(initial_state.get_manhattan_distance(right_state))
+    print(initial_state.get_hamming_distance(right_state))
+
 

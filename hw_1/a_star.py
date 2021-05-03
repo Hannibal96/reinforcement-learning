@@ -30,9 +30,26 @@ def a_star(puzzle):
     # that achieves the minimal distance to the starting state of puzzle.
     prev = {initial.to_string(): None}
 
+    ##################################################
+    #fringe = []
+    #heapq.heappush(fringe, (0, initial))
+    inverter_dic = {'u': 'd', 'd': 'u', 'r': 'l', 'l': 'r'}
+    done = False
     while len(fringe) > 0:
-        # remove the following line and complete the algorithm
-        assert False
+        _, curr_state = heapq.heappop(fringe)
+        valid_act = curr_state.get_actions()
+        for act in valid_act:
+            new_fringe_state = curr_state.apply_action(act)
+            if new_fringe_state.to_string() in concluded:
+                continue
+            heapq.heappush(fringe, (new_fringe_state.get_hamming_distance(goal), new_fringe_state))
+            prev[new_fringe_state.to_string()] = inverter_dic[act]
+            if new_fringe_state.to_string() == goal.to_string():
+                done = True
+                break
+        if done:
+            break
+        concluded.add(curr_state.to_string())
 
     return prev
 
@@ -40,6 +57,7 @@ def a_star(puzzle):
 def solve(puzzle):
     # compute mapping to previous using dijkstra
     prev_mapping = a_star(puzzle)
+    #print("Open states:", len(prev_mapping))
     # extract the state-action sequence
     plan = traverse(puzzle.goal_state, prev_mapping)
     print_plan(plan)
@@ -49,6 +67,7 @@ def solve(puzzle):
 if __name__ == '__main__':
     # we create some start and goal states. the number of actions between them is 25 although a shorter plan of
     # length 19 exists (make sure your plan is of the same length)
+
     initial_state = State()
     actions = [
         'r', 'r', 'd', 'l', 'u', 'l', 'd', 'd', 'r', 'r', 'u', 'l', 'd', 'r', 'u', 'u', 'l', 'd', 'l', 'd', 'r', 'r',

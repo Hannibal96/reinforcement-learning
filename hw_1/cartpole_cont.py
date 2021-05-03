@@ -32,7 +32,7 @@ class CartPoleContEnv(gym.Env):
             np.finfo(np.float32).max])
 
         self.observation_space = spaces.Box(-high, high, dtype=np.float32)
-        high = np.array([100.0])
+        high = np.array([4.0])
         self.action_space = spaces.Box(-high, high, dtype=np.float32)
 
         self.seed()
@@ -150,9 +150,11 @@ if __name__ == '__main__':
     env.render()
     is_done = False
     while not is_done:
-        _, r, is_done, _ = env.step(np.array([0.0]))
+        _, r, is_done, _ = env.step(np.array([1.0]))
         env.render()
         print(r)
+        if r == -1:
+            break
     # run random forces
     env.reset()
     env.render()
@@ -161,4 +163,6 @@ if __name__ == '__main__':
         _, r, is_done, _ = env.step(env.action_space.sample())  # take a random action
         env.render()
         print(r)
+        if r == -1:
+            break
     env.close()

@@ -42,7 +42,7 @@ def a_star(puzzle):
             new_fringe_state = curr_state.apply_action(act)
             if new_fringe_state.to_string() in concluded:
                 continue
-            heapq.heappush(fringe, (new_fringe_state.get_hamming_distance(goal), new_fringe_state))
+            heapq.heappush(fringe, (new_fringe_state.get_manhattan_distance(goal), new_fringe_state))
             prev[new_fringe_state.to_string()] = inverter_dic[act]
             if new_fringe_state.to_string() == goal.to_string():
                 done = True

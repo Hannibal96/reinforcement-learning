@@ -77,9 +77,9 @@ class State:
             other_location = other._get_location_char(str(i))
             diff = abs(self_location[0] - other_location[0]) + abs(self_location[1] - other_location[1])
             total_distance += diff
-        import numpy as np
-        alpha = np.inf
-        return total_distance * 5
+        #import numpy as np
+        #alpha = np.inf
+        return total_distance * 0
 
     def get_hamming_distance(self, other):
         total_distance = 0

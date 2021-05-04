@@ -61,7 +61,7 @@ def a_star(puzzle):
 def solve(puzzle):
     # compute mapping to previous using dijkstra
     prev_mapping = a_star(puzzle)
-    #print("Open states:", len(prev_mapping))
+    print("Open states:", len(prev_mapping))
     # extract the state-action sequence
     plan = traverse(puzzle.goal_state, prev_mapping)
     print_plan(plan)

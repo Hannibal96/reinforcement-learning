@@ -107,7 +107,7 @@ def print_diff(iteration, planned_theta, actual_theta, planned_action, actual_ac
 
 
 if __name__ == '__main__':
-    theta = [0.1*np.pi] # , 0.18*np.pi, 0.36*np.pi]
+    theta = [1*np.pi] # , 0.18*np.pi, 0.36*np.pi]
     theta_data = []
 
     for init_theta in theta:

@@ -1,3 +1,4 @@
+from state import *
 def traverse(goal_state, prev):
     '''
     extract a plan using the result of dijkstra's algorithm
@@ -26,6 +27,6 @@ def traverse(goal_state, prev):
 def print_plan(plan):
     print('plan length {}'.format(len(plan)-1))
     for current_state, action in plan:
-        print(current_state.to_string())
+        print(current_state.to_string()) # , ', d=',current_state.get_manhattan_distance(State()))
         if action is not None:
             print('apply action {}'.format(action))

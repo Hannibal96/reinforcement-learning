@@ -1,5 +1,5 @@
 from dijkstra import *
-init = State("8 6 7\r\n2 5 4\r\n3 0 1")
+init = State("8 0 6\r\n5 4 7\r\n2 3 1")
 goal = State()
 
 print("*"*100)

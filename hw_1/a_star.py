@@ -36,13 +36,17 @@ def a_star(puzzle):
     inverter_dic = {'u': 'd', 'd': 'u', 'r': 'l', 'l': 'r'}
     done = False
     while len(fringe) > 0:
-        _, curr_state = heapq.heappop(fringe)
+        curr_h, curr_state = heapq.heappop(fringe)
+        curr_d = distances[curr_state.to_string()]
         valid_act = curr_state.get_actions()
         for act in valid_act:
             new_fringe_state = curr_state.apply_action(act)
+            new_h = new_fringe_state.get_manhattan_distance(goal)
+            #new_h = new_fringe_state.get_hamming_distance(goal)
             if new_fringe_state.to_string() in concluded:
                 continue
-            heapq.heappush(fringe, (new_fringe_state.get_manhattan_distance(goal), new_fringe_state))
+            heapq.heappush(fringe, (new_h+curr_d+1, new_fringe_state))
+            distances[new_fringe_state.to_string()] = curr_d+1
             prev[new_fringe_state.to_string()] = inverter_dic[act]
             if new_fringe_state.to_string() == goal.to_string():
                 done = True

@@ -28,8 +28,6 @@ def dijkstra(puzzle):
     prev = {initial.to_string(): None}
 
     ##################################################
-    #fringe = []
-    #heapq.heappush(fringe, (0, initial))
     inverter_dic = {'u': 'd', 'd': 'u', 'r': 'l', 'l':'r'}
     done = False
     while len(fringe) > 0:

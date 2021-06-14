@@ -403,66 +403,59 @@ def calc_delta_t(sample, v, gamma):
 def update_v_TD_lambda(estimated_v, eligibility ,alpha, delta_t):
     return estimated_v + alpha * eligibility * delta_t
 
-# v = np.zeros([32])
-# e = np.zeros([32])
-# n = np.zeros([32])
-# N = 10000
-# plot values
-# lamda = 0
-# inf_norm = []
-# final_state_norm = []
+
 colors = iter(['b', 'r', 'g', 'm', 'y'])
 
 
-# # %%
-# for lam in [0, 0.01, 0.5, 0.9]:
-#     inf_norm = []
-#     final_state_norm = []
-#     for i in range(20):
-#         v = np.zeros([32])
-#         e = np.zeros([32])
-#         n = np.zeros([32])
-#         N = 10000
-#         inf_norm_i = []
-#         final_state_norm_i = []
-#         for i in range(N):
-#             cost, trajectory = simulation(policy=get_full_policy_c(table=problem_table), table=problem_table, random=True)
-#             for sample in trajectory:
-#                 s_t, _, _, _ = sample
-#                 n[s_t] += 1
-#                 alpha = 10/(100 + n[s_t])
-#                 delta = calc_delta_t(sample=sample, v=v, gamma=1.0)
-#                 e = update_eligibilty_traces(eligibilty=e, sample=sample, lamda=lam, gamma=1.0)
-#                 v = update_v_TD_lambda(estimated_v=v, eligibility=e, alpha=alpha, delta_t=delta)
-#             # added tracers for plot
-#             inf_norm_i.append(np.linalg.norm((V_c - v),ord=np.inf))
-#             final_state_norm_i.append(np.linalg.norm(V_c[-1] - v[-1]))
-#         inf_norm.append(inf_norm_i)
-#         final_state_norm.append(final_state_norm_i)
+# %%
+for lam in [0, 0.01, 0.5, 0.9]:
+    inf_norm = []
+    final_state_norm = []
+    for i in range(20):
+        v = np.zeros([32])
+        e = np.zeros([32])
+        n = np.zeros([32])
+        N = 10000
+        inf_norm_i = []
+        final_state_norm_i = []
+        for i in range(N):
+            cost, trajectory = simulation(policy=get_full_policy_c(table=problem_table), table=problem_table, random=True)
+            for sample in trajectory:
+                s_t, _, _, _ = sample
+                n[s_t] += 1
+                alpha = 10/(100 + n[s_t])
+                delta = calc_delta_t(sample=sample, v=v, gamma=1.0)
+                e = update_eligibilty_traces(eligibilty=e, sample=sample, lamda=lam, gamma=1.0)
+                v = update_v_TD_lambda(estimated_v=v, eligibility=e, alpha=alpha, delta_t=delta)
+            # added tracers for plot
+            inf_norm_i.append(np.linalg.norm((V_c - v),ord=np.inf))
+            final_state_norm_i.append(np.linalg.norm(V_c[-1] - v[-1]))
+        inf_norm.append(inf_norm_i)
+        final_state_norm.append(final_state_norm_i)
 
-#     mean_inf_norm = np.mean(inf_norm, axis=0)
-#     mean_final_state_norm = np.mean(final_state_norm, axis=0)
+    mean_inf_norm = np.mean(inf_norm, axis=0)
+    mean_final_state_norm = np.mean(final_state_norm, axis=0)
 
-#     # print infinte norm
-#     plt.plot(mean_final_state_norm, color=next(colors), label=f'lambda = {lam}')
+    # print infinte norm
+    plt.plot(mean_final_state_norm, color=next(colors), label=f'lambda = {lam}')
 
-# # plt.title(f'||V^pi_c - V_TD(lambda)||_inf, alpha=10/(100+n)')
-# # plt.ylabel('infinite norm')
+# plt.title(f'||V^pi_c - V_TD(lambda)||_inf, alpha=10/(100+n)')
+# plt.ylabel('infinite norm')
 
-# # print final state norm
-# # plt.plot(final_state_norm)
-# plt.title(f'final state: |V^pi_c(s0) - V_TD(lambda)(s0)|, alpha=10/(100+n)')
-# plt.ylabel('norm')
-# plt.xlabel('iteration')
-# plt.legend()
-# plt.show()
+# print final state norm
+# plt.plot(final_state_norm)
+plt.title(f'final state: |V^pi_c(s0) - V_TD(lambda)(s0)|, alpha=10/(100+n)')
+plt.ylabel('norm')
+plt.xlabel('iteration')
+plt.legend()
+plt.show()
 
 
-# print("*"*20)
-# print("TD(lambda) alpha=10/(100+n) for policy_c:\n", np.round(v,3))
+print("*"*20)
+print("TD(lambda) alpha=10/(100+n) for policy_c:\n", np.round(v,3))
         
-# print("*"*20)
-# print("V of policy_c:\n", np.round(V_c,3))
+print("*"*20)
+print("V of policy_c:\n", np.round(V_c,3))
 
 
 
@@ -496,7 +489,7 @@ def get_action_min(state, Q, epsilon):     # 1-5
 
 Q = np.zeros([32,5])
 n = np.zeros([32,5])
-sample_rate = 1
+sample_rate = 100
 value_pi_Q_error_lists = []
 full_state_value_pi_Q_error_lists = []
 
@@ -516,7 +509,8 @@ for state in range(states):
 N = 100_000
 epsilon = 0.1
 
-for epsilon in [0.1, 0.01]:
+
+for idx, epsilon in enumerate([0.01, 0.1]):
     Q = np.zeros([32,5])
     n = np.zeros([32,5])
     value_pi_Q_error_list = []
@@ -528,20 +522,23 @@ for epsilon in [0.1, 0.01]:
         while not state_t == 0:
             cost_t, state_tag = single_step_sim(state=state_t, action=action_t, table=problem_table)
             #print("state:", state_t, ", action:", action_t, ", next_state:", state_tag)
-            
+                
             f_epsilon = epsilon
             action_tag = get_action_min(state=state_tag, Q=Q, epsilon=f_epsilon)
             reward = cost_t
             
             delta = reward + 1 * Q[state_tag, action_tag-1] - Q[state_t, action_t-1]
-            
+                
             n[state_t, action_t-1] = n[state_t, action_t-1] + 1
+            # if idx == 0:
             alpha = 10/(100+n[state_t, action_t-1])
-            # alpha = 0.1
-            # alpha = 1/n[state_t, action_t-1]
-            
+            # elif idx == 1:
+            #     alpha = 0.01
+            # elif idx == 2:
+            #     alpha = 1/n[state_t, action_t-1]
+                
             Q[state_t, action_t-1] = Q[state_t, action_t-1] + alpha * delta
-            
+                
             state_t = state_tag
             action_t = action_tag
 
@@ -555,57 +552,23 @@ for epsilon in [0.1, 0.01]:
 
     value_pi_Q_error_lists.append(value_pi_Q_error_list)
     full_state_value_pi_Q_error_lists.append(full_state_value_pi_Q_error_list)
-    
-plt.plot(value_pi_Q_error_list[0], color='b', label='epsilon 0.1')
-plt.plot(value_pi_Q_error_list[1], color='r', label='epsilon 0.01')
+        
+plt.plot(value_pi_Q_error_lists[0], color='b', label='epsilon = 0.01')
+plt.plot(value_pi_Q_error_lists[1], color='r', label='epsilon = 0.1')
 # print final state norm
 
-plt.title('||V* - V^{pi_Q}||')
+plt.title(f'||V* - V^(pi_Q)||')
 plt.ylabel('infinite norm')
-plt.xlabel('iteration')
+plt.xlabel('iteration [x100]')
 plt.legend()
 plt.show()
 
 
-plt.plot(full_state_value_pi_Q_error_lists[0], color='b', label='epsilon 0.1')
-plt.plot(full_state_value_pi_Q_error_lists[1], color='r', label='epsilon 0.01')
+plt.plot(full_state_value_pi_Q_error_lists[0], color='b', label='epsilon = 0.01')
+plt.plot(full_state_value_pi_Q_error_lists[1], color='r', label='epsilon = 0.1')
 # print final state norm
-
-plt.title('|V*(s0) - argmin Q(s0,a)|')
+plt.title(f'|V*(s0) - argmin Q(s0,a)|')
 plt.ylabel('norm')
-plt.xlabel('iteration')
+plt.xlabel('iteration [x100]')
 plt.legend()
 plt.show()
-Q = Q - 1000
-print(np.round(Q, 3))
- 
-
-
-# %%
-final_Q = Q + 1000*(Q==0)
-final_Q[0,0] = 0
-print((np.argmin(final_Q, axis=1)+1)[1:] == get_full_policy_uc(table=problem_table)[1:])
-print(31 - ((np.argmin(final_Q, axis=1)+1)[1:] == get_full_policy_uc(table=problem_table)[1:]).sum())
-
-p = calc_p(problem_table, (np.argmin(final_Q, axis=1)+1))
-v_pi_Q = get_v(p, cost)
-print(v_pi_Q)
-
-
-
-# %%
-print(np.min(final_Q, axis=1))
-
-
-# %%
-print(np.max(V_uc - np.min(final_Q, axis=1)))
-
-
-# %%
-np.random.randint(2)
-
-
-# %%
-
-
-

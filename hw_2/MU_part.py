@@ -238,6 +238,7 @@ plt.show()
 
 # %%
 #section f Simulator
+print('section f - simulator')
 def single_step_sim(state, action, table):
     cost = calc_cost_per_state(problem_table=table, state=state)
     miu=problem_table[0][int(action-1)]
@@ -285,6 +286,7 @@ def simulation(policy, table, random=False):
 
 # %%
 # section g
+print('section g')
 def update_TD_zero(estimated_v, alpha, gamma, sample):
     s_t, a_t, r_t, s_tag = sample
     v_s_t = estimated_v[s_t]
@@ -386,6 +388,7 @@ print("V of policy_c:\n", np.round(V_c,3))
 
 # %%
 # section h
+print('section h')
 def update_eligibilty_traces(eligibilty, sample, lamda, gamma):
     s_t, a_t, r_t, s_tag = sample
     eligibilty = eligibilty * lamda * gamma
@@ -465,6 +468,7 @@ colors = iter(['b', 'r', 'g', 'm', 'y'])
 
 # %%
 # section i
+print('section i')
 def get_action_min(state, Q, epsilon):     # 1-5
     if state == 0:
         return 0
@@ -494,6 +498,7 @@ Q = np.zeros([32,5])
 n = np.zeros([32,5])
 sample_rate = 1
 value_pi_Q_error_lists = []
+full_state_value_pi_Q_error_lists = []
 
 labels = iter(['epsilon 0.1', 'epsilon 0.01'])
 
@@ -510,10 +515,12 @@ for state in range(states):
 
 N = 100_000
 epsilon = 0.1
+
 for epsilon in [0.1, 0.01]:
-    Q = 1000*np.ones([32,5])
+    Q = np.zeros([32,5])
     n = np.zeros([32,5])
     value_pi_Q_error_list = []
+    full_state_value_pi_Q_error_list = []
     for i in range(N):
         #print("*"*10)
         state_t = 31
@@ -542,18 +549,33 @@ for epsilon in [0.1, 0.01]:
             p = calc_p(problem_table, np.argmin(Q+1000*(Q==0), axis=1)+1)
             v_pi_Q = get_v(p, cost)
             value_pi_Q_error_list.append(np.linalg.norm((V_uc - v_pi_Q),ord=np.inf))
+            full_state_value_pi_Q_error_list.append(np.linalg.norm(V_uc[-1] - v_pi_Q[-1]))
+
+
 
     value_pi_Q_error_lists.append(value_pi_Q_error_list)
-    plt.plot(value_pi_Q_error_list, color=next(colors), label=next(labels))
-
+    full_state_value_pi_Q_error_lists.append(full_state_value_pi_Q_error_list)
+    
+plt.plot(value_pi_Q_error_list[0], color='b', label='epsilon 0.1')
+plt.plot(value_pi_Q_error_list[1], color='r', label='epsilon 0.01')
 # print final state norm
 
-plt.title('V* - V^{pi_Q}')
+plt.title('||V* - V^{pi_Q}||')
 plt.ylabel('infinite norm')
 plt.xlabel('iteration')
 plt.legend()
 plt.show()
 
+
+plt.plot(full_state_value_pi_Q_error_lists[0], color='b', label='epsilon 0.1')
+plt.plot(full_state_value_pi_Q_error_lists[1], color='r', label='epsilon 0.01')
+# print final state norm
+
+plt.title('|V*(s0) - argmin Q(s0,a)|')
+plt.ylabel('norm')
+plt.xlabel('iteration')
+plt.legend()
+plt.show()
 Q = Q - 1000
 print(np.round(Q, 3))
  
@@ -573,10 +595,6 @@ print(v_pi_Q)
 
 # %%
 print(np.min(final_Q, axis=1))
-
-
-# %%
-V_uc
 
 
 # %%
